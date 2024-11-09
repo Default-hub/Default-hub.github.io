@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Catalog with GPA Calculator</title>
+    <style>
+        /* Global styles */
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            min-height: 100vh;
+            background-color: #002222;
+        }
+
+        /* Sidebar styling */
+        .sidebar {
+            width: 250px;
+            background-color: #002222;
+            color: white;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #5eecd7;
+        }
+
+        .sidebar ul {
+            padding: 0;
+            list-style-type: none;
+            margin-bottom: 20px;
+        }
+
+        .sidebar ul li {
+            margin: 10px 0;
+        }
+
+        .sidebar ul li a {
+            text-decoration: none;
+            color: #fff;
+            font-size: 18px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .sidebar ul li a:hover {
+            color: #336666;
+        }
+
+        /* Content area styling */
+        .content {
+            flex: 1;
+            padding: 30px;
+            background-color: #004242;
+            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .content h1 {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #5eecd7;
+        }
+
+        /* Form styling */
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-width: 400px;
+            margin-bottom: 40px;
+        }
+
+        label {
+            font-size: 16px;
+            color: #5eecd7;
+        }
+
+        input, select, button {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: 1px solid #006464;
+            background-color:  #006464;
+            color: #5eecd7;
+        }
+
+        button {
+            background-color: #008080;
+            color: #5eecd7;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #008080;
+        }
+
+        /* Course list styles */
+        .quarter-section {
+            margin-bottom: 40px;
+        }
+
+        .quarter-section h3 {
+            background-color:  #002222;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 20px;
+            color: #5eecd7;
+        }
+
+        .course-list {
+            padding: 0;
+            list-style-type: none;
+            color: #5eecd7;
+        }
+
+        .course-item {
+            display: flex;
+            justify-content: space-between;
+            background-color: #008080;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            transition: background-color 0.3s ease;
+        }
+
+        .course-item:hover {
+            background-color: #00a3a3;
+        }
+
+        .delete-btn {
+            color: red;
+            cursor: pointer;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        .delete-btn:hover {
+            color: #d32f2f;
+        }
+
+        /* GPA display styling */
+        .sidebar div {
+            margin-top: 20px;
+        }
+
+        .sidebar h3 {
+            font-size: 18px;
+            color: #fff;
+        }
+
+        .sidebar span {
+            font-size: 20px;
+            font-weight: bold;
+            color: #5eecd7;
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>GPA Calculator</h2>
+    <ul>
+        <li><a href="#q1">Freshman</a></li>
+        <li><a href="#q2">Sophomore</a></li>
+        <li><a href="#q3">Junior</a></li>
+        <li><a href="#q4">Senior</a></li>
+    </ul>
+    <div>
+        <h3>Unweighted GPA: <span id="unweighted-gpa">0.00</span></h3>
+        <h3>Weighted GPA: <span id="weighted-gpa">0.00</span></h3>
+    </div>
+</div>
+
+<div class="content">
+    <h1>Add a New Class</h1>
+    <form id="add-class-form">
+        <label>Class Name: <input type="text" id="class-name" required></label>
+        <label>Credit Hours: <input id="credit-hours" ></label>
+        <label>Grade (0-100): <input type="number" id="grade" min="0" max="100" required></label>
+        <label>Year:
+            <select id="quarter">
+                <option value="q1">Freshman</option>
+                <option value="q2">Sophomore</option>
+                <option value="q3">Junior</option>
+                <option value="q4">Senior</option>
+            </select>
+        </label>
+        <label>Class Level:
+            <select id="class-level">
+                <option value="normal">Normal</option>
+                <option value="honors">Honors</option>
+                <option value="ap">AP</option>
+            </select>
+        </label>
+        <button type="submit">Add Class</button>
+    </form>
+
+    <div id="course-sections">
+        <div id="q1" class="quarter-section">
+            <h3>Freshman Classes</h3>
+            <ul class="course-list"></ul>
+        </div>
+        <div id="q2" class="quarter-section">
+            <h3>Sophomore Classes</h3>
+            <ul class="course-list"></ul>
+        </div>
+        <div id="q3" class="quarter-section">
+            <h3>Junior Classes</h3>
+            <ul class="course-list"></ul>
+        </div>
+        <div id="q4" class="quarter-section">
+            <h3>Senior Classes</h3>
+            <ul class="course-list"></ul>
+        </div>
+    </div>
+</div>
+
+<script>
+    const gradeToPoints = [
+        { min: 97, max: 100, points: 4.0 }, // A+
+        { min: 93, max: 96, points: 4.0 }, // A
+        { min: 90, max: 92, points: 3.7 }, // A-
+        { min: 87, max: 89, points: 3.3 }, // B+
+        { min: 83, max: 86, points: 3.0 }, // B
+        { min: 80, max: 82, points: 2.7 }, // B-
+        { min: 77, max: 79, points: 2.3 }, // C+
+        { min: 73, max: 76, points: 2.0 }, // C
+        { min: 70, max: 72, points: 1.7 }, // C-
+        { min: 67, max: 69, points: 1.3 }, // D+
+        { min: 63, max: 66, points: 1.0 }, // D
+        { min: 60, max: 62, points: 0.7 }, // D-
+        { min: 0, max: 59, points: 0.0 },  // F
+    ];
+
+    const classLevelAdjustment = {
+        'normal': 0.0,
+        'honors': 0.6,
+        'ap': 0.8
+    };
+
+    document.getElementById('add-class-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const courseData = getFormData();
+        if (!courseData) return;
+
+        addClass(courseData);
+        calculateGPA();
+    });
+
+    function getFormData() {
+        const name = document.getElementById('class-name').value;
+        const creditHours = parseFloat(document.getElementById('credit-hours').value);
+        const grade = parseFloat(document.getElementById('grade').value);
+        const quarter = document.getElementById('quarter').value;
+        const classLevel = document.getElementById('class-level').value;
+
+        if (isNaN(creditHours) || isNaN(grade)) {
+            alert('Please provide valid inputs.');
+            return null;
+        }
+
+        return { name, creditHours, grade, quarter, classLevel };
+    }
+
+    function addClass({ name, creditHours, grade, quarter, classLevel }) {
+        const courseList = document.getElementById(quarter).querySelector('.course-list');
+        const courseItem = document.createElement('li');
+        const gradePoints = getGradePoints(grade) + classLevelAdjustment[classLevel];
+
+        courseItem.classList.add('course-item');
+        courseItem.dataset.creditHours = creditHours;
+        courseItem.dataset.grade = grade;
+        courseItem.dataset.gradePoints = gradePoints;
+
+        courseItem.innerHTML = `${name} (Grade: ${grade}) <span class="delete-btn">Delete</span>`;
+        courseList.appendChild(courseItem);
+
+        document.getElementById('add-class-form').reset();
+    }
+
+    function getGradePoints(grade) {
+        for (const gradeRange of gradeToPoints) {
+            if (grade >= gradeRange.min && grade <= gradeRange.max) {
+                return gradeRange.points;
+            }
+        }
+        return 0; // In case of an invalid grade
+    }
+
+    function capitalizeFirstLetter(str) {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    document.getElementById('course-sections').addEventListener('click', function(event) {
+        if (event.target.classList.contains('delete-btn')) {
+            deleteClass(event.target);
+            calculateGPA();
+        }
+    });
+
+    function deleteClass(deleteButton) {
+        const courseItem = deleteButton.parentElement;
+        courseItem.remove();
+    }
+
+    function calculateGPA() {
+        const courseItems = document.querySelectorAll('.course-item');
+        let totalCredits = 0;
+        let totalUnweightedPoints = 0;
+        let totalWeightedPoints = 0;
+
+        courseItems.forEach(item => {
+            const creditHours = parseFloat(item.dataset.creditHours);
+            const gradePoints = parseFloat(item.dataset.gradePoints);
+
+            totalCredits += creditHours;
+            totalUnweightedPoints += getGradePoints(parseFloat(item.dataset.grade)) * creditHours;
+            totalWeightedPoints += gradePoints * creditHours;
+        });
+
+        const unweightedGPA = totalCredits > 0 ? (totalUnweightedPoints / totalCredits).toFixed(2) : 0;
+        const weightedGPA = totalCredits > 0 ? (totalWeightedPoints / totalCredits).toFixed(2) : 0;
+
+        document.getElementById('unweighted-gpa').textContent = unweightedGPA;
+        document.getElementById('weighted-gpa').textContent = weightedGPA;
+    }
+</script>
+
+</body>
+</html>
