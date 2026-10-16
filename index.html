@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f8fa">
+  <title>ASAP PSCL | CSV Reports</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#top" aria-label="ASAP PSCL home">
+      <span class="brand-mark">♟</span>
+      <span><strong>ASAP <em>PSCL</em></strong><small>Philadelphia Scholastic Chess League</small></span>
+    </a>
+    <span class="local-tag"><span class="status-dot"></span> CSV-only · Runs in your browser</span>
+  </header>
+
+  <main id="top" class="page-shell">
+    <section class="hero">
+      <div><p class="eyebrow">LEAGUE REPORTS</p><h1>Every team. <span>Every result.</span></h1><p class="hero-description">Upload a ChessRoster standings CSV to build team standings and player reports instantly.</p></div>
+      <label class="button button-primary upload-main">↑ Upload standings CSV<input id="csv-file" type="file" accept=".csv,text/csv"></label>
+    </section>
+
+    <nav class="tabs" aria-label="Dashboard sections">
+      <button class="tab active" data-tab="overview">Overview</button>
+      <button class="tab" data-tab="players">Teams & players</button>
+      <button class="tab" data-tab="bracket">Prediction bracket</button>
+      <button class="tab" data-tab="events">Events & reports</button>
+    </nav>
+
+    <section id="tab-overview" class="tab-panel active">
+      <section class="panel event-panel">
+        <div class="event-heading"><div><p class="eyebrow">SELECTED EVENT</p><h2 id="selected-event-title">Import your first report</h2><p id="selected-event-meta" class="muted">No CSV has been uploaded for this event yet.</p></div><span class="event-badge">LOCAL DATA</span></div>
+        <div class="event-controls">
+          <label class="field event-select-field">Event<select id="event-select"></select></label>
+          <label class="field url-field">ChessRoster report link <span class="optional">optional</span><input id="event-url" type="url" placeholder="Paste the report URL for reference"></label>
+          <button id="save-event-btn" class="button button-outline">Save link</button>
+          <label class="button button-primary upload-button">Upload CSV<input id="csv-file-secondary" type="file" accept=".csv,text/csv"></label>
+        </div>
+        <p class="help-text">Download the standings report from ChessRoster as a CSV, then upload it here. Uploading a new file replaces the selected event's previous results.</p>
+        <div id="event-status" class="notice" role="status">Ready for a CSV report. No network connection is needed.</div>
+      </section>
+
+      <div class="metrics-grid">
+        <article class="metric-card"><span class="metric-label">Detected teams</span><strong id="school-count">0</strong><small>Team codes in this CSV</small></article>
+        <article class="metric-card"><span class="metric-label">Players</span><strong id="player-count">0</strong><small>Rows with player names</small></article>
+        <article class="metric-card"><span class="metric-label">Scored players</span><strong id="scored-count">0</strong><small>Numeric event totals</small></article>
+      </div>
+
+      <section class="panel">
+        <div class="section-title-row"><div><p class="eyebrow">EVENT STANDINGS</p><h2>Team leaderboard</h2><p class="muted">T-4 is the sum of each team's four highest values in the CSV's Total column.</p></div><button id="export-standings" class="button button-outline">Export standings CSV</button></div>
+        <div class="table-scroll"><table class="data-table leaderboard-table"><thead><tr><th>Rank</th><th>School / team code</th><th class="right">T-4 points</th><th>Players</th><th class="right">Top four scores</th><th class="right">Avg. rating</th></tr></thead><tbody id="standings-body"></tbody></table></div>
+        <p class="table-footnote">All detected team codes are included, including non-league schools present in the report. Check the event and team codes before treating results as official PSCL standings.</p>
+      </section>
+    </section>
+
+    <section id="tab-players" class="tab-panel">
+      <section class="panel">
+        <div class="section-title-row"><div><p class="eyebrow">CSV DIRECTORY</p><h2>Teams & players</h2><p class="muted">Only teams and players present in the selected CSV appear here.</p></div><button id="export-players" class="button button-outline">Export player report</button></div>
+        <div class="filter-row"><input id="player-search" class="search-input" type="search" placeholder="Search team code or player name"><span id="player-count-label" class="muted small"></span></div>
+        <div id="teams-container" class="teams-list"><div class="empty-state">Upload a standings CSV to detect teams and players.</div></div>
+      </section>
+    </section>
+
+    <section id="tab-bracket" class="tab-panel">
+      <section class="panel"><div class="section-title-row"><div><p class="eyebrow">PREDICTION TOOL</p><h2>Playoff bracket</h2><p class="muted">Seeds are based on T-4 standings from this CSV. Rating-based win chances use the average rating of each team's seven highest-rated players.</p></div><button id="reset-bracket" class="button button-outline">Reset picks</button></div><div id="bracket-note" class="bracket-note">Import a CSV containing at least six teams to generate the bracket.</div></section>
+      <div id="bracket-container" class="bracket-rounds"></div>
+      <section class="panel"><div class="section-title-row"><div><p class="eyebrow">RATING SNAPSHOT</p><h2>Detected team ratings</h2><p class="muted">Calculated from player ratings in the imported CSV; ratings display without commas.</p></div></div><div id="bracket-ratings" class="rating-grid"></div></section>
+    </section>
+
+    <section id="tab-events" class="tab-panel">
+      <section class="panel"><div class="section-title-row"><div><p class="eyebrow">LOCAL EVENT MANAGER</p><h2>Events & reports</h2><p class="muted">Events and imported CSV results are saved in this browser only.</p></div><button id="add-event-btn" class="button button-primary">+ New event</button></div><div id="events-list" class="events-list"></div></section>
+      <section class="panel"><div class="section-title-row"><div><p class="eyebrow">BACKUP</p><h2>Export or restore your data</h2><p class="muted">Download a backup to move your saved events to another browser. This does not upload anything.</p></div></div><div class="backup-actions"><button id="export-backup" class="button button-outline">Download backup</button><label class="button button-outline file-label">Import backup<input id="import-backup" type="file" accept="application/json,.json"></label></div><p class="help-text">Because this version has no backend, saved events stay in this browser and are not automatically shared with other people or devices.</p></section>
+    </section>
+
+    <footer class="site-footer"><span><strong>ASAP PSCL</strong> · CSV report tool</span><span>No API · No account · Local browser storage</span></footer>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
