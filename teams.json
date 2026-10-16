@@ -1,0 +1,21 @@
+[
+  {"id":"central","name":"Central High School","players":[]},
+  {"id":"masterman","name":"Julia R. Masterman","players":[]},
+  {"id":"gwashington","name":"George Washington High School","players":[]},
+  {"id":"bodine","name":"Bodine","players":[]},
+  {"id":"swenson","name":"Swenson","players":[]},
+  {"id":"mastbaum","name":"Mastbaum","players":[]},
+  {"id":"northeast","name":"Northeast High School","players":[]},
+  {"id":"gwcarver","name":"G.W Carver High School","players":[]},
+  {"id":"palumbo","name":"Academy at Palumbo","players":[
+    {"id":"palumbo-b1","board":"B1","name":"Brandon Tran","memberId":"","rating":1671,"status":"In Team"},
+    {"id":"palumbo-b2","board":"B2","name":"Bryan Martinez-Hernandez","memberId":"","rating":1473,"status":"In Team"},
+    {"id":"palumbo-b3","board":"B3","name":"Mabinti Mansaray","memberId":"","rating":1338,"status":"In Team"},
+    {"id":"palumbo-b4","board":"B4","name":"Nina Yang","memberId":"","rating":1122,"status":"In Team"},
+    {"id":"palumbo-b5","board":"B5","name":"Johnfer Quispe","memberId":"","rating":1128,"status":"In Team"},
+    {"id":"palumbo-sub4","board":"Sub","name":"Faadi Garcia","memberId":"","rating":1587,"status":"Out Team"}
+  ]},
+  {"id":"new-foundations","name":"New Foundations","players":[]},
+  {"id":"boyslatin","name":"BoysLatin","players":[]},
+  {"id":"franklin-learning-center","name":"Franklin Learning Center","players":[]}
+]
