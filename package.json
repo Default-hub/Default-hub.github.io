@@ -1,8 +1,0 @@
-{
-  "name": "asap-pscl-team-leaderboard",
-  "version": "0.1.0",
-  "private": true,
-  "description": "Spreadsheet-inspired ASAP PSCL event leaderboard",
-  "scripts": {"dev": "wrangler dev", "deploy": "wrangler deploy"},
-  "devDependencies": {"wrangler": "^4.0.0"}
-}
