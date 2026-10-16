@@ -10,7 +10,7 @@ A static, responsive GitHub Pages website plus a Cloudflare Worker API for the P
 - **US Chess events:** `GET /api/event?url=...` requests event/section standings from the US Chess ratings API and normalizes results for the dashboard.
 - **ChessRoster events:** paste a supported ChessRoster tournament/report URL into the event URL field. Download that report's standings as CSV from ChessRoster, then use **Upload ChessRoster CSV**. The Worker parses the CSV and the dashboard stores the imported results for that event.
 - **Event-specific scoring:** results are cached separately in the current browser for each event; scores do not carry across events.
-- **T-4:** each school gets the sum of its four highest scores among roster players matched by US Chess membership ID. `Out Team` players do not count.
+- **T-4:** each school gets the sum of its four highest scores among roster players matched by US Chess membership ID. `Out Team` players do not count. If a school has zero ID matches, the leaderboard falls back to recognized ChessRoster team codes for a provisional score; verify those codes and eligibility before treating it as official.
 - **Playoff bracket:** the six-team wildcard/semi-final/championship bracket is interactive; changing an earlier winner clears dependent picks. Picks persist in that browser.
 - **Roster backups:** export/import JSON backups from Events & settings.
 

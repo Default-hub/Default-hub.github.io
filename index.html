@@ -45,15 +45,15 @@
 
       <section class="panel leaderboard-panel">
         <div class="section-title-row"><div><p class="eyebrow">CURRENT EVENT</p><h2>Team leaderboard</h2><p class="muted">T-4 points = the sum of each school's four highest eligible player scores.</p></div><button id="refresh-standings-btn" class="button button-outline">↻ Recalculate</button></div>
-        <div class="table-scroll"><table class="leaderboard-table"><thead><tr><th class="rank-col">Rank</th><th>School</th><th class="right">T-4 points</th><th>Matched players</th><th class="right">Top scores</th></tr></thead><tbody id="standings-body"></tbody></table></div>
-        <div class="table-footnote"><span class="footnote-dot"></span> Only roster players matched by US Chess membership ID are included. Scores are for this event only.</div>
+        <div class="table-scroll"><table class="leaderboard-table"><thead><tr><th class="rank-col">Rank</th><th>School</th><th class="right">T-4 points</th><th>Players / scoring source</th><th class="right">Top scores</th></tr></thead><tbody id="standings-body"></tbody></table></div>
+        <div class="table-footnote"><span class="footnote-dot"></span> Scores use US Chess ID-matched roster players when available; otherwise, recognized ChessRoster team codes provide a provisional T-4 score. Confirm team-code mappings and roster eligibility before treating fallback scores as official.</div>
       </section>
     </section>
 
     <section id="tab-rosters" class="tab-panel">
       <div class="panel roster-panel">
         <div class="section-title-row roster-toolbar"><div><p class="eyebrow">SCHOOL DIRECTORY</p><h2>School rosters</h2><p class="muted">Boards B1–B10 and substitutes, following your spreadsheet format.</p></div><div class="toolbar-actions"><button id="add-school-btn" class="button button-primary">＋ Add school</button><button id="save-roster-btn" class="button button-dark">Save shared roster</button></div></div>
-        <div class="roster-help"><span class="help-icon">i</span><span>Enter each player's US Chess ID to match their score automatically. The administrator token is required to publish roster edits for everyone.</span></div>
+        <div class="roster-help"><span class="help-icon">i</span><span>Enter each player's US Chess ID for exact roster matching. If no roster players match, the leaderboard can provisionally score recognized ChessRoster team codes. The administrator token is required to publish roster edits for everyone.</span></div>
         <div class="roster-filter-row"><label class="search-field"><span>⌕</span><input id="school-search" type="search" placeholder="Search schools or players…"></label><span id="roster-save-state" class="save-state">Changes not published</span></div>
         <div id="teams-container" class="teams-grid"></div>
       </div>

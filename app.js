@@ -114,17 +114,45 @@ function scoreFor(player, results) {
   if (!id || player.status === "Out Team") return null;
   return numericScore(results.get(id)?.score);
 }
+const TEAM_CODE_ALIASES = {
+  central: ["CENTRAL", "CENTRALHIGH", "CENTRALHIGHSCHOOL"],
+  masterman: ["MASTERMAN", "JULIARMASTERMAN", "JULIARMASTERMAN"],
+  gwashington: ["GWHS", "GEORGEWASHINGTON", "GEORGEWASHINGTONHS", "GEORGEWASHINGTONHIGHSCHOOL"],
+  bodine: ["BODINE", "BODINEHS", "BODINEHIGHSCHOOL"],
+  swenson: ["SWENSON", "SWENSONARTSTECH"],
+  mastbaum: ["MASTBAUM", "MASTBAUMHS"],
+  northeast: ["NORTHEAST", "NORTHEASTHS", "NORTHEASTHIGHSCHOOL", "NEHS"],
+  gwcarver: ["GWCARVER", "GWCARVERHS", "GWCARVERHIGHSCHOOL", "CARVER"],
+  palumbo: ["PALUMBO", "ACADEMYATPALUMBO", "AAP"],
+  "new-foundations": ["NF", "NEWFOUNDATIONS", "NEWFOUNDATIONSHS"],
+  boyslatin: ["BOYSLATIN", "BOYSLATINCHARTER", "BLC"],
+  "franklin-learning-center": ["FLC", "FRANKLINLEARNINGCENTER"]
+};
+const normalizeTeamCode = value => String(value ?? "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+function eventResultBelongsToTeam(result, team) {
+  const code = normalizeTeamCode(result.teamCode);
+  if (!code) return false;
+  const aliases = new Set([...(TEAM_CODE_ALIASES[team.id] || []), team.id, team.name]);
+  return [...aliases].some(alias => normalizeTeamCode(alias) === code);
+}
 function getTeamStandings() {
   const results = resultMap();
   return teams.map(team => {
-    const matched = [];
+    const rosterMatched = [];
     for (const player of team.players || []) {
       const score = scoreFor(player, results);
-      if (score !== null) matched.push({ score, name: player.name, board: player.board });
+      if (score !== null) rosterMatched.push({ score, name: player.name, board: player.board });
     }
+    // Prefer exact US Chess ID matches. If the roster has no matches for this school,
+    // fall back to the event's own team code (available in ChessRoster CSV exports).
+    const usedTeamCodeFallback = rosterMatched.length === 0;
+    const matched = usedTeamCodeFallback
+      ? activeResults.filter(result => eventResultBelongsToTeam(result, team) && numericScore(result.score) !== null)
+          .map(result => ({ score: Number(result.score), name: result.name || "Unnamed player", board: "Event" }))
+      : rosterMatched;
     matched.sort((a, b) => b.score - a.score || String(a.name).localeCompare(String(b.name)));
     const top = matched.slice(0, 4);
-    return { team, matched, top, total: top.length ? top.reduce((sum, player) => sum + player.score, 0) : null };
+    return { team, matched, top, usedTeamCodeFallback, total: top.length ? top.reduce((sum, player) => sum + player.score, 0) : null };
   }).sort((a, b) => (b.total ?? -1) - (a.total ?? -1) || a.team.name.localeCompare(b.team.name));
 }
 function initials(name) { return String(name || "School").split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]).join("").toUpperCase(); }
@@ -139,7 +167,8 @@ function renderStandings() {
     const hasScores = standing.total !== null;
     const rankClass = index === 0 && hasScores ? "rank-badge gold-rank" : "rank-badge";
     const scores = standing.top.length ? standing.top.map(player => formatNumber(player.score)).join(" + ") : "No matched scores";
-    return `<tr><td><span class="${rankClass}">${index + 1}</span></td><td><div class="school-cell"><span class="school-monogram">${esc(initials(standing.team.name))}</span><span>${esc(standing.team.name)}</span></div></td><td class="right points-cell ${hasScores ? "" : "pending"}">${hasScores ? formatNumber(standing.total) : "—"}</td><td><span class="match-pill ${standing.matched.length ? "" : "none"}">${standing.matched.length} matched</span></td><td class="right score-list">${esc(scores)}</td></tr>`;
+    const sourceLabel = standing.usedTeamCodeFallback ? "team-code scores" : "roster ID matches";
+    return `<tr><td><span class="${rankClass}">${index + 1}</span></td><td><div class="school-cell"><span class="school-monogram">${esc(initials(standing.team.name))}</span><span>${esc(standing.team.name)}</span></div></td><td class="right points-cell ${hasScores ? "" : "pending"}">${hasScores ? formatNumber(standing.total) : "—"}</td><td><span class="match-pill ${standing.matched.length ? "" : "none"}" title="${esc(sourceLabel)}">${standing.matched.length} ${standing.usedTeamCodeFallback ? "team-code" : "matched"}</span></td><td class="right score-list">${esc(scores)}</td></tr>`;
   }).join("") || '<tr><td colspan="5" class="empty-state">Add a school to start the leaderboard.</td></tr>';
 }
 function statusClass(status) { return status === "Out Team" ? "status-out-team" : status === "Unsure" ? "status-unsure" : "status-in-team"; }
@@ -365,7 +394,7 @@ async function importChessRosterCsv(file) {
     activeEvent.source = "chessroster";
     activeEvent.eventInfo = { name: activeEvent.name, source: "ChessRoster", importedAt: new Date().toISOString() };
     cacheActiveEvent(); saveEvents(); render();
-    setStatus(`Imported ${data.playerCount ?? activeResults.length} players from ChessRoster CSV. ${data.teamCount ?? 0} team codes found. Scores match roster players by US Chess ID; check IDs and roster status if a school shows no score.`, "success");
+    setStatus(`Imported ${data.playerCount ?? activeResults.length} players from ChessRoster CSV. ${data.teamCount ?? 0} team codes found. The leaderboard prefers US Chess ID matches and falls back to recognized CSV team codes when a school has no roster matches.`, "success");
   } catch (error) {
     setStatus(`Could not import ChessRoster CSV: ${error.message}`, "error");
   } finally {
